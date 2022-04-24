@@ -17,6 +17,7 @@
 \usepackage{theoremref}
 \usepackage{wrapfig}
 \usepackage{caption}
+\usepackage{hyperref}
 
 \newtheorem{definition}{Definition}[section]
 \newtheorem{proposition}{Proposition}[section]
@@ -34,6 +35,7 @@
 \tableofcontents
 
 \section{Abstract}
+Dinic's algorithm solves the maximum flow problem, which is a problem that has applications in computer networks and in electrical circuit theory. It also runs significantly faster than other common algorithms, such as Ford-Fulkerson and Edmonds-Karp. This paper features an implementation of the algorithm that is shown to be both correct and have the right time complexity. The correctness and the time complexity of the algorithm is also analyzed theoretically. We find that the algorithm runs in $O(|V|^2|E|)$ time, where $|V|$ is the number of vertices in the network and $|E|$ is the number of edges in the network.
 
 \chapter{The Max Flow Problem}
 A graph is a common tool utilized by computer scientists and mathematicians to study many different phenomenon. There are many different types of graphs, but we examine a unique case of them in this paper, which we call a network. These graphs are directed, weighted, and have a defined source and sink node.
@@ -42,9 +44,9 @@ We will try to build some intuition on what is implied by a network. The simples
 
 Then, one can imagine flow being sent through the network. Flow is sent from the source and ends up in the sink. At each node other than the source and the sink, the amount of flow input into the node equals the amount of flow that is output. One can imagine the flow as water being sent through the network of pipes. Hence, the flow value is the amount of flow that has been sent through the network.
 
-Now, we can define the problem of interest that we wish to solve through this project. What is the maximum amount of flow that we can send through this network from the source to the sink. The algorithm, Dinic's algorithm, attempts to find the max flow of an arbitrary network.
+Now, we can define the problem of interest that we wish to solve through this project: what is the maximum amount of flow that we can send through this network from the source to the sink? The algorithm, Dinic's algorithm, attempts to find the max flow of an arbitrary network.
 
-\chapter{Historical Solution}
+\chapter{Historical Solutions}
 Although this paper will focus on an analysis of Dinic's algorithm, there are other proposed algorithms that solve the max flow problem. Two of them that will be discussed in this section are the Ford-Fulkerson algorithm and the Edmonds-Karp algorithm. Although these also solve the max flow problem, their time complexities are worse when compared to Dinic's algorithm. With that being said, a lot of the ideas of Dinic's algorithm are reflected in the other two algorithms. Becuase these algorithms are much simplier to understand than Dinic's algorithm, we will spend some time discussing them in order to help bridge into the algorithm.
 
 \section{Ford-Fulkerson}
@@ -59,18 +61,18 @@ This process continues until the source is disconnected from the sink. In this c
 The algorithm has a time complexity of $O(|E|*f)$, where $|E|$ is the number of edges in the network and $f$ is the max flow of the network. We can clearly see that this algorithm is not ideal, as we generally do not want the time complexity of an algorithm to be a function of the value being computed. It is for this reason that the Edmonds-Karp algorithm improves upon the shortcomings of Ford-Fulkerson.
 
 \section{Edmonds-Karp}
-The Edmonds-Karp algorithm operates similarly to the Ford-Folkerson algorithm, but there is one major difference between the two. While Ford-Folkerson chooses an arbitrary path to send the flow down for each iteration, Edmonds-Karp instead chooses the shortest path as found by breadth-first search (BFS). One must be careful when stating "shortest" path, as, although the graph is weighted, this shortest path does not take into account the weights of the edges. Instead, this shortest path is defined by the number of edges included in the path between the two nodes. Hence, Edmonds-Karp finds a shortest path between the source and sink, and it sends flow down this path.
+The Edmonds-Karp algorithm operates similarly to the Ford-Fulkerson algorithm, but there is one major difference between the two. While Ford-Fulkerson chooses an arbitrary path to send the flow down for each iteration, Edmonds-Karp instead chooses the shortest path as found by breadth-first search (BFS). One must be careful when stating "shortest" path, as, although the graph is weighted, this shortest path does not take into account the weights of the edges. Instead, this shortest path is defined by the number of edges included in the path between the two nodes. Hence, Edmonds-Karp finds a shortest path between the source and sink, and it sends flow down this path.
 
-Beyond this fact, Ford-Fulkerson and Edmonds-Karp are identical. So why does there exist a separate name for this seemingly very similar algorithm. This differnce can be seen in the time complexity, as Edmonds-Karp has complexity of $O(|V||E|^2)$, were $|V|$ is the number of vertices in the network and $|E|$ is the number of edges in the network. Now, we posit that Edmonds-Karp has a "better" time complexity than Ford-Fulkerson, but this is not the most obvious statement. Ford-Fulkerson is unique in the fact that its time complexity is a function of the value it is computing. So, if this value is very small, Ford-Fulkerson runs much faster than Edmonds-Karp. But, in a more general case where the max flow can be arbitrary large (which it is often assumed to be), Edmonds-Karp runs in much faster time (as it is a special case of Ford-Fulkerson).
+Beyond this fact, Ford-Fulkerson and Edmonds-Karp are identical. So why does there exist a separate name for this seemingly very similar algorithm. This differnce can be seen in the time complexity, as Edmonds-Karp has a complexity of $O(|V||E|^2)$, were $|V|$ is the number of vertices in the network and $|E|$ is the number of edges in the network. Now, we posit that Edmonds-Karp has a "better" time complexity than Ford-Fulkerson, but this is not the most obvious statement. Ford-Fulkerson is unique in the fact that its time complexity is a function of the value it is computing. So, if this value is very small, Ford-Fulkerson runs much faster than Edmonds-Karp. But, in a more general case where the max flow can be arbitrary large (which it is often assumed to be), Edmonds-Karp runs in much faster time (as it is a special case of Ford-Fulkerson).
 
 \chapter{Dinic's Algorithm}
 \section{Description of Dinic's}
-The purpose of Dinic's Algorithm is to solve the max flow problem in a much faster time complexity than other solutions. It performs in $O\left(V^{2}E\right)$ time, which is much faster than the Ford-Fulkerson or Edmonds-Karp algorithms. Dinic's starts in a similar way to Edmonds-Karp, and uses BFS to find the level of each node in the graph. Then, multiple DFSs are used to find paths from the source to the sink, where the only valid paths are ones that go from level $L$ to $L + 1$. The capacity of the edges are then updated based on the bottleneck value through the path. This is repeated until a blocking flow is reached, where no more flow can be sent from the source to the sink. Adding up all bottleneck value values renders the maximum flow through the graph.
+The purpose of Dinic's Algorithm is to solve the max flow problem in a much faster time complexity than other solutions. It performs in $O\left(|V|^{2}|E|\right)$ time, which is much faster than the Ford-Fulkerson or Edmonds-Karp algorithms. Dinic's starts in a similar way to Edmonds-Karp and uses BFS to find the level of each node in the graph. Then, multiple DFSs are used to find paths from the source to the sink, where the only valid paths are ones that go from level $L$ to $L + 1$. The capacity of the edges are then updated based on the bottleneck value through the path. This is repeated until a blocking flow is reached, where no more flow can be sent from the source to the sink. Adding up all bottleneck value values renders the maximum flow through the graph.
 
 \pagebreak
 
 \section{Visualization of Dinic's}
-
+\paragraph{The following section details a step by step example of the algorithm running.}\footnote{All figures from: \url{https://github.com/williamfiset/Algorithms/blob/master/slides/graphtheory/network_flow_algorithms.pdf}}
 \begin{figure}[!htb]
     \includegraphics[width=\textwidth]{assets/visual01.png}
     \centering
@@ -192,26 +194,26 @@ The following section contains a pseudo code example of how an implementation of
 This section of the document discusses the analysis of our algorithm including assessing both the time complexity and correctness of the algorithm. In the sections below the processes that were employed are described in detail. Additionally, the results will be provided in full.
 
 \section{Time Complexity}
-As previously mentioned in the report the time complexity of this algorithm is $O(|V|^2|E|)$. In order to confirm this our team created many random test cases where we controlled the number of nodes and edges in a weighted graph. However, it should be noted that we did not control whether these test cases connected the source and sink. This later became an issue when trying to analyze the results, but this will be discussed later. After generating each test case we ran the algorithm and recorded the number of nodes, edges, max flow (if any), and execution time of the algorithm in secs and stored these results in a text file. This was repeated a number of times while increasing the number of nodes and edges each time.
+As previously mentioned in the report, the time complexity of this algorithm is $O(|V|^2|E|)$. In order to confirm this, our team created many random test cases where we controlled the number of nodes and edges in a weighted graph. However, it should be noted that we did not control whether these test cases connected the source and sink. This later became an issue when trying to analyze the results, but this will be discussed later. After generating each test case, we ran the algorithm and recorded the number of nodes, edges, max flow (if any), and execution time of the algorithm in seconds and stored these results in a text file. This was repeated a number of times while increasing the number of nodes and edges each time.
 
-After enough iterations have been recorded the text file was imported into an excel sheet and the execution times were plotted on a scatter chart. An example of this chart can be seen below.
+After enough iterations have been recorded, the text file was imported into an excel sheet, and the execution times were plotted on a scatter chart. An example of this chart can be seen below.
 
 \includegraphics[width=\textwidth]{assets/Josh1.png}
 
-What rapidly became apparent was that the data appeared to follow two different trends as the input was increased. We found that in these cases the max flow was consistently zero. The reason for this is because in these test cases the sink was not connected to the source which is the best case scenario for this algorithm so the execution time was consistently fast no matter the size of the input. In order to prevent this from skewing our r squared value we decided to exclude these results and simply plot only the execution times for the test cases where the sink and source were connected. This resulted in the following scatter plot:
+What rapidly became apparent was that the data appeared to follow two different trends as the input was increased. We found that in these cases the max flow was consistently zero. The reason for this is because in these test cases the sink was not connected to the source which is the best case scenario for this algorithm so the execution time was consistently fast no matter the size of the input. In order to prevent this from skewing our $r^2$ value, we decided to exclude these results and simply plot only the execution times for the test cases where the sink and source were connected. This resulted in the following scatter plot:
 
 \includegraphics[width=\textwidth]{assets/Josh2.png}
 
-Here, we saw that we got an excellent r squared value. This test was rerun a number of times using different test cases every time and the results were all similar so we concluded that our analysis of the algorithm's time complexity was correct.
+Here, we saw that we got an excellent $r^2$ value. From this, we concluded that the time complexity of the algorithm was as we expected it to be.
 
 \section{Correctness}
-In addition to time complexity we also accessed our algorithm for correctness. Our test for correctness is relatively simple and far from complete by itself, but is of great importance to supporting our results for time complexity because if the algorithm isn't correct then the time complexity doesn’t matter.
+In addition to time complexity, we also assessed our algorithm for correctness. Our test for correctness is relatively simple and of great importance to supporting our results for time complexity. If the algorithm is not correct, what does the time complexity matter?
 
-With that said, to test correctness we simply found known test cases online and ran them through our algorithm to see if it produced the expected max flow. Below is an example of one test case that we found on GeeksforGeeks.
+To test correctness, we found known test cases online and ran them through our algorithm to see if they produced the expected max flow. Below is an example of one test case that we found on GeeksforGeeks.
 
 \includegraphics[width=\textwidth]{assets/Josh3.png}
 
-Here you can see that the source is indeed connected to the sink and from the website we knew that the maxflow for this particular graph should be 23 and that is exactly what we got after running it through the algorithm. Therefore, our practical analysis is complete.
+Here you can see that the source is indeed connected to the sink and from the website we knew that the maxflow for this particular graph should be 23. This is what we obtained after running it through the algorithm. Therefore, our practical analysis is complete.
 
 \chapter{Mathematical Analysis}
 In this section, we will rigorously analyze Dinic's algorithm mathematically. First, we will provide some mathematical definitions that will be needed in order to formally define the algorithm. In the next section, we will attempt to formally define the algorithm using our definitions. The third section will feature analysis that establishes that Dinic's algorithm will find the max flow. The final section will analyze the time complexity of the algorithm.
@@ -243,7 +245,7 @@ A flow function is a tool used to define the flow that has been sent through eac
             $$f(t \rightarrow u) = 0 \quad \forall (t \rightarrow u) \in E$$
             $$f((t \rightarrow u)^R) = 0 \quad \forall (t \rightarrow u)^R \in E$$
     \end{itemize}
-    We then denote $f_s \in \mathbb{N}$ as the flow of $G$ in relation to $f$ if
+    We then denote $f_s \in \mathbb{N}$ as the flow of $G$ in relation to $f$ as:
     $$f_s = \sum_{(s \rightarrow u) \in E}f(s \rightarrow u) + \sum_{(s \rightarrow u)^R}f((s \rightarrow u)^R)$$
 \end{definition}
 
@@ -293,7 +295,7 @@ A layered network is a another network that can be created by modifying another 
 \end{definition}
 
 \section{The Algorithm}
-We will know propose the mathematical algorithm that will be used to compute the maximum flow of a graph. We consider the network $G = (V, E, c, s, t)$ to not have multiple edges and be constant throughout this section.\\
+We will now propose the mathematical algorithm that will be used to compute the maximum flow of a graph. We consider the network $G = (V, E, c, s, t)$ to not have multiple edges and be constant throughout this section.\\
 We now define $F = (f_0, f_1, ..., f_{n-1})$ to be a sequence of flow functions of $G$. We let $f_0$ be the zero function. Then, we define the following algorithm to compute $f_{i+1}$ given $f_i$.
 \begin{algorithm}
 \caption{Computing $f_{i+1}$ given $f_i$}\label{alg:cap}
@@ -468,7 +470,5 @@ We now feature this theorem, which establishes the time complexity of the entire
 \begin{proof}
     We first note that $f_{i+1}$ can be derived from $f_i$ in $O(|V||E|)$ time using Lemma \ref{lemma7}. Theorem \ref{theorem1} tells us that $n \le |V|$. Hence, $f_n$ can be computed in $O(|V|^2|E|)$ time. We know that the flow of $f_n$ is the maximum flow of $G$. We can trivially find the flow value of $f_n$ in $O(|E|)$ time. Therefore, the maximum flow can be found in $O(|V|^2|E|)$ time.
 \end{proof}
-
-\chapter{Conclusions}
 
 \end{document}
